@@ -4,7 +4,8 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
-const { ethers } = require("hardhat")
+const { verifyMessage } = require("ethers/lib/utils")
+const { ethers, run, network } = require("hardhat")
 const hre = require("hardhat")
 
 async function main() {
@@ -22,6 +23,26 @@ async function main() {
   const simpleStorage = await SimpleStorage.deploy()
 
   console.log(`Simple storage deployed to address: ${simpleStorage.address}`)
+  if (network.config.chainId === 5 && process.env.ETHERSCAN_API_KEY) {
+    await simpleStorage.deployTransaction.wait(6)
+    await verify(simpleStorage.address, [])
+  }
+}
+
+async function verify(contractAddress, args) {
+  console.log("Verifying contract")
+  try {
+    await run("verify:verify", {
+      address: contractAddress,
+      constructorArguements: args,
+    })
+  } catch (e) {
+    if (e.message.toLowerCase().includes("already verified")) {
+      console.log("Already verified")
+    } else {
+      console.log(e)
+    }
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
