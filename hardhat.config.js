@@ -1,14 +1,27 @@
-require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-toolbox")
+require("dotenv").config()
 
+const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL
+const PRIVATE_KEY = process.env.PRIVATE_KEY
+
+console.log(GOERLI_RPC_URL)
 task("accounts", "Prints the list of accounts", async () => {
-  const accounts = await ethers.getSigners();
+  const accounts = await ethers.getSigners()
 
   for (const account of accounts) {
-    console.log(account.address);
+    console.log(account.address)
   }
-});
+})
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
+  defaultNetwork: "hardhat",
+  networks: {
+    goerli: {
+      url: GOERLI_RPC_URL,
+      accounts: [PRIVATE_KEY],
+      chainId: 5,
+    },
+  },
   solidity: "0.8.17",
-};
+}
