@@ -23,4 +23,18 @@ describe("SimpleStorage", () => {
 
     assert.equal(currentValue.toString(), "7")
   })
+
+  it("Should return an empty array", async () => {
+    const persons = await simpleStorage.retrievePersons()
+    assert.equal(persons.length, 0)
+  })
+
+  it("should retrieve persons correctly", async () => {
+    await simpleStorage.addPerson("Alice", 9)
+    await simpleStorage.addPerson("Bob", 10)
+    const persons = await simpleStorage.retrievePersons()
+    assert.equal(persons.length, 2)
+    assert.equal(persons[0].name, "Alice")
+    assert.equal(persons[1].name, "Bob")
+  })
 })
